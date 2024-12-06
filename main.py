@@ -23,8 +23,10 @@ def parse_input():
     parser.add_argument('--seed', default=0, type=int)
     parser.add_argument('--arch', default='simple_convnet', type=str, help='model architecture to use')
     parser.add_argument('--dataset', default='CIFAR10', type=str, help='dataset to be trained on')
+    parser.add_argument('--clip_norm', type=float, default=None,help='enable per-sample gradient clipping and set clipping norm')
+    parser.add_argument('--private', action='store_true')
     parser.add_argument('--augment', action='store_true', help='train with augmentation if available')
-    parser.add_argument('--checkpoint', action='store_false')
+    parser.add_argument('--checkpoint', action='store_true')
 
     # For target model training
     parser.add_argument('--track_free_loss', action='store_true',
@@ -112,6 +114,7 @@ def main():
 
         trainer = Trainer(args, (trainloader, plainloader, testloader), device)
         trainer.train_test(model, args, model_id)
+    print('\n==> Finished training')
 
 
 if __name__ == '__main__':

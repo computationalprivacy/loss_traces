@@ -5,7 +5,9 @@ import warnings
 import numpy as np
 import pandas as pd
 import torch
+from opacus import PrivacyEngine
 from opacus.grad_sample import GradSampleModule
+from opacus.optimizers import DPOptimizer
 
 from config import MODEL_DIR, STORAGE_DIR, LOCAL_DIR
 
@@ -18,6 +20,7 @@ class Trainer:
         self.device = device
         self.loss_func = torch.nn.CrossEntropyLoss()
         self.loss_func_sample = torch.nn.CrossEntropyLoss(reduction='none')
+
 
     @staticmethod
     def get_optimizer(training_params, lr, momentum, weight_decay):
@@ -71,7 +74,7 @@ class Trainer:
         return all_losses.tolist(), all_norms.tolist()
 
 
-    def train_epoch(self, model, epoch, sample_losses, sample_grad_norms, args):
+    def train_epoch(self, model, epoch, args):
         print('\nEpoch: %d' % epoch)
         model.train()
         total = 0
@@ -79,6 +82,7 @@ class Trainer:
         t0 = time.time()
         free_train_losses = pd.DataFrame(np.full((len(self.trainloader.dataset), 1), np.nan))
         free_train_losses.index = self.trainloader.dataset.indices
+        sample_losses, sample_grad_norms = [], []
 
         # collect init and final grad norms & losses
         if args.track_grad_norms and epoch == 0:
@@ -121,12 +125,26 @@ class Trainer:
         self.scheduler.step()
         acc = (100. * float(correct) / float(total)) if total > 0 else 0.0
         print('Time: %d s' % (t1 - t0), 'train acc:', acc, end=' ')
-        return acc, free_train_losses
+        return acc, free_train_losses, sample_losses, sample_grad_norms
 
     def train_test(self, model, args, model_id):
         self.training_params = self.get_training_params(model)
         self.optimizer = self.get_optimizer(self.training_params, args.lr, args.momentum, args.weight_decay)
         self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, args.epochs)
+
+        ## TODO: Define appropriate epsilon and delta values
+        if args.private:
+            privacy_engine = PrivacyEngine()
+
+            model, optimizer, trainloader = privacy_engine.make_private_with_epsilon(max_grad_norm=10.0, module=model, optimizer=self.optimizer, data_loader=self.trainloader, target_epsilon=8.0, target_delta=1e-5, epochs=args.epochs)
+
+        if args.clip_norm:
+            self.optimizer = DPOptimizer(
+                optimizer=self.optimizer,
+                noise_multiplier=0.0,
+                max_grad_norm=args.clip_norm,
+                expected_batch_size=args.batchsize,
+            )
 
 
         # init loss & norm stores
@@ -148,8 +166,11 @@ class Trainer:
         print('\n==> Starting training')
 
         for epoch in range(args.epochs):
-            train_acc, train_fl = self.train_epoch(model, epoch, sample_losses, sample_grad_norms, args)
+            train_acc, train_fl, train_sl, train_sgn = self.train_epoch(model, epoch, args)
             test_acc, test_fl = self.test(model, args)
+
+            sample_losses.extend(train_sl)
+            sample_grad_norms.extend(train_sgn)
 
             if args.track_free_loss:
                 free_train_losses = pd.concat([free_train_losses, train_fl], axis=1)
@@ -158,7 +179,7 @@ class Trainer:
             if args.checkpoint and (epoch + 1) % 5 == 0:
                 save_model(model, args, self.trainloader, train_acc, test_acc, checkpoint=True, epoch=epoch)
 
-        print('\n==> Finished training')
+
         if args.track_free_loss:
             save_free_loss(free_train_losses, free_test_losses, args)
 
@@ -238,12 +259,16 @@ def save_tracking_data(sample_losses, sample_grad_norms, args):
     file += '.pq'
     fullpath = os.path.join(outdir, file)
     fullpath_loss = os.path.join(outdir_loss, file)
-    pd.DataFrame(sample_losses).transpose().to_parquet(fullpath_loss)
-    if os.path.exists(fullpath):
-        print("'DUPLICATE' GRAD NORMS - WILL NOT OVERWRITE PREVIOUS", file=sys.stderr)
-    while os.path.exists(fullpath):
-        fullpath += "_"
-    pd.DataFrame(sample_grad_norms).transpose().to_parquet(fullpath)
+    loss_df = pd.DataFrame(sample_losses).transpose()
+    loss_df.columns = loss_df.columns.astype(str)
+    loss_df.to_parquet(fullpath_loss)
+    # if os.path.exists(fullpath):
+    #     print("'DUPLICATE' GRAD NORMS - WILL NOT OVERWRITE PREVIOUS", file=sys.stderr)
+    # while os.path.exists(fullpath):
+    #     fullpath += "_"
+    grad_df = pd.DataFrame(sample_grad_norms).transpose()
+    grad_df.columns =  grad_df.columns.astype(str)
+    grad_df.to_parquet()
 
 
 def save_model(model, args, trainloader, train_acc, test_acc, checkpoint=False, epoch=None):
@@ -283,6 +308,7 @@ def save_model(model, args, trainloader, train_acc, test_acc, checkpoint=False, 
     dir = os.path.join(MODEL_DIR, args.exp_id)
 
     if checkpoint:
+        print(f"SAVING CHECKPOINT @ EPOCH: {epoch+1}")
         dir = os.path.join(dir, f'checkpoint_before_{epoch + 1}')
     os.makedirs(dir, exist_ok=True)
     fullpath = os.path.join(dir, save_name)

@@ -1,70 +1,39 @@
 import os
+from typing import Tuple
+
 import torch
 from opacus.validators import ModuleValidator
 from torch.nn import Module
+from torchvision.models import resnet18, vgg11
 
 from config import MODEL_DIR
+from models.simple_convnet import Net
 
 
 ## TODO: Remove irrelevant models + possibly the "part_to_train" convention if we're not using it
 class ModelLoader:
-    # @staticmethod
-    # def _load_simple_convnet(num_classes: int) -> Tuple[Module, Module]:
-    #     from models.simple_convnet import Net
-    #     model = Net()
-    #     return model, model
+    @classmethod
+    def _load_simple_convnet(cls, num_classes: int) -> Net:
+        from models.simple_convnet import Net
+        model = Net()
+        return model
 
-    # @staticmethod
-    # def _load_resnet18_pretrained(num_classes: int) -> Tuple[Module, Module]:
-    #     model = resnet18(weights='IMAGENET1K_V1')
-    #     num_ftrs = model.fc.in_features
-    #     model.fc = nn.Linear(num_ftrs, num_classes)
-    #     return model, model.fc
-    #
-    # @staticmethod
-    # def _load_resnet18_full_tune(num_classes: int) -> Tuple[Module, Module]:
-    #     model = resnet18(weights='IMAGENET1K_V1')
-    #     num_ftrs = model.fc.in_features
-    #     model.fc = nn.Linear(num_ftrs, num_classes)
-    #     model = ModuleValidator.fix(model)
-    #     return model, model
-    #
-    # @staticmethod
-    # def _load_resnet18_scratch(num_classes: int) -> Tuple[Module, Module]:
-    #     model = resnet18(num_classes=num_classes)
-    #     model = ModuleValidator.fix(model)
-    #     return model, model
+    @classmethod
+    def _load_resnet18(cls, num_classes: int) -> Tuple[Module, Module]:
+        model = resnet18(num_classes=num_classes)
+        model = ModuleValidator.fix(model)
+        return model
 
-    # @staticmethod
-    # def _load_resnet50_pretrained(num_classes: int) -> Tuple[Module, Module]:
-    #     model = resnet50(weights='IMAGENET1K_V2')
-    #     num_ftrs = model.fc.in_features
-    #     model.fc = nn.Linear(num_ftrs, num_classes)
-    #     return model, model.fc
-    #
-    # @staticmethod
-    # def _load_bit_resnet50(num_classes: int) -> Tuple[Module, Module]:
-    #     import models.bit as bit
-    #     MODEL_DIR = 'path/to/model/directory'  # Replace with actual path
-    #     model = bit.KNOWN_MODELS['BiT-M-R50x1'](head_size=num_classes, zero_head=True)
-    #     model.load_from(np.load(os.path.join(MODEL_DIR, 'BiT-M-R50x1.npz')))
-    #     return model, model.head
+    @classmethod
+    def _load_vgg11(cls, num_classes: int) -> Tuple[Module, Module]:
+        model = vgg11(num_classes=num_classes)
+        return model
 
-    # @staticmethod
-    # def _load_vgg11(num_classes: int) -> Tuple[Module, Module]:
-    #     model = vgg11(num_classes=num_classes)
-    #     return model, model
-    #
-    # @staticmethod
-    # def _load_vgg16(num_classes: int) -> Tuple[Module, Module]:
-    #     model = vgg16(num_classes=num_classes)
-    #     return model, model
-
-    # @staticmethod
-    # def _load_resnet20_cifar(num_classes: int) -> Tuple[Module, Module]:
-    #     from models.resnet_cifar import resnet20
-    #     model = resnet20()
-    #     return model, model
+    @classmethod
+    def _load_resnet20(cls, num_classes: int) -> Tuple[Module, Module]:
+        from models.resnet_cifar import resnet20
+        model = resnet20()
+        return model
 
     @classmethod
     def _load_wide_resnet(cls, num_classes: int) -> Module:
@@ -75,7 +44,11 @@ class ModelLoader:
 
     # Mapping of architecture names to their corresponding loader methods
     _ARCH_LOADERS = {
-        'wrn28-2': _load_wide_resnet
+        'simple_convnet': _load_simple_convnet,
+        'vgg11': _load_vgg11,
+        'rn-20': _load_resnet20,
+        'rn-18': _load_resnet18,
+        'wrn28-2': _load_wide_resnet,
     }
 
     @classmethod
