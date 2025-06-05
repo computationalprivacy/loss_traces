@@ -253,15 +253,7 @@
 <span style="color: #5c6370; font-style: italic;"># Take mean for backward pass</span>
 <span style="color: #e06c75;">loss</span>.<span style="color: #61afef;">mean</span>().<span style="color: #61afef;">backward</span>()
 
-<span style="color: #5c6370; font-style: italic;"># After training, compute LT-IQR</span>
-<span style="color: #c678dd;">for</span> <span style="color: #e06c75;">sample_idx</span> <span style="color: #c678dd;">in</span> <span style="color: #61afef;">range</span>(<span style="color: #e06c75;">num_samples</span>):
-    <span style="color: #5c6370; font-style: italic;"># Get loss trace for this sample across all epochs</span>
-    <span style="color: #e06c75;">trace</span> <span style="color: #56b6c2;">=</span> [<span style="color: #e06c75;">epoch_losses</span>[<span style="color: #e06c75;">sample_idx</span>] <span style="color: #c678dd;">for</span> <span style="color: #e06c75;">epoch_losses</span> <span style="color: #c678dd;">in</span> <span style="color: #e06c75;">all_saved_losses</span>]
-    
-    <span style="color: #5c6370; font-style: italic;"># Compute IQR (75th percentile - 25th percentile)</span>
-    <span style="color: #e06c75;">lt_iqr_score</span> <span style="color: #56b6c2;">=</span> <span style="color: #e06c75;">np</span>.<span style="color: #61afef;">percentile</span>(<span style="color: #e06c75;">trace</span>, <span style="color: #d19a66;">75</span>) <span style="color: #56b6c2;">-</span> <span style="color: #e06c75;">np</span>.<span style="color: #61afef;">percentile</span>(<span style="color: #e06c75;">trace</span>, <span style="color: #d19a66;">25</span>)
-    
-<span style="color: #5c6370; font-style: italic;"># Higher LT-IQR scores indicate more vulnerable samples!</span></code></pre>
+</code></pre>
           <p style="text-align: center; margin-top: 2em;">
             That's it! No shadow models, no additional training - just analyze the loss traces you're already computing.
           </p>
