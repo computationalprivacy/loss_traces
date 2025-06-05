@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+  <!-- Replace the content tag with appropriate information -->
+  <meta name="description" content="Free Record-Level Privacy Risk Evaluation Through Artifact-Based Methods">
+  <meta property="og:title" content="Loss Traces: Free Privacy Risk Evaluation"/>
+  <meta property="og:description" content="Estimate the vulnerability of training samples to membership inference attacks by analyzing their loss traces during model training - no shadow models required!"/>
+  <meta property="og:url" content="https://github.com/computationalprivacy/loss_traces"/>
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="static/images/figure1.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+
+
+  <meta name="twitter:title" content="Loss Traces: Free Privacy Risk Evaluation">
+  <meta name="twitter:description" content="Estimate training sample vulnerability by analyzing loss traces - achieving 92% precision without shadow models">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="static/images/figure1.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="membership inference attacks, privacy, machine learning, differential privacy, loss traces, artifact-based methods">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>Loss Traces: Free Record-Level Privacy Risk Evaluation</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐸</text></svg>">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+<body>
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">Free Record-Level Privacy Risk Evaluation Through Artifact-Based Methods</h1>
+            <div class="is-size-5 publication-authors">
+              <!-- Paper authors -->
+              <span class="author-block">
+                Joseph Pollock<sup>*</sup>,</span>
+                <span class="author-block">
+                  Igor Shilov<sup>*</sup>,</span>
+                  <span class="author-block">
+                    Euodia Dodd,</span>
+                  <span class="author-block">
+                    Yves-Alexandre de Montjoye
+                  </span>
+                  </div>
+
+                  <div class="is-size-5 publication-authors">
+                    <span class="author-block">Imperial College London</span>
+                    <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
+                  </div>
+
+                  <div class="column has-text-centered">
+                    <div class="publication-links">
+                         <!-- Arxiv PDF link -->
+                      <span class="link-block">
+                        <a href="https://arxiv.org/pdf/2411.05743.pdf" target="_blank"
+                        class="external-link button is-normal is-rounded is-dark">
+                        <span class="icon">
+                          <i class="fas fa-file-pdf"></i>
+                        </span>
+                        <span>Paper</span>
+                      </a>
+                    </span>
+
+                  <!-- Github link -->
+                  <span class="link-block">
+                    <a href="https://github.com/computationalprivacy/loss_traces" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+
+                <!-- ArXiv abstract Link -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2411.05743" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- TL;DR Section -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">TL;DR</h2>
+        <div class="content">
+          <p style="font-size: 1.2em; text-align: center; margin-bottom: 3em;">
+            <strong>You can estimate the vulnerability of a training sample to privacy attacks by looking at its loss trace.</strong>
+          </p>
+          
+          <!-- Frog images and loss traces -->
+          <div class="columns is-centered is-vcentered" style="margin-bottom: 2em;">
+            <div class="column is-6" style="text-align: center;">
+              <img src="static/images/frogs1.png" alt="Frog samples with loss traces" style="width: 100%; max-width: 500px; margin: 0 auto; display: block;"/>
+            </div>
+            <div class="column is-6" style="text-align: center;">
+              <img src="static/images/frgos2.png" alt="Loss trace comparison" style="width: 100%; max-width: 500px; margin: 0 auto; display: block;"/>
+            </div>
+          </div>
+          
+          <!-- Descriptions below the images -->
+          <div class="columns is-centered" style="margin-bottom: 2em;">
+            <div class="column is-4">
+              <div style="background-color: #f5f5f5; padding: 1.5em; border-radius: 5px;">
+                <p style="margin: 0; font-weight: bold;">Easy-to-fit outlier</p>
+                <p style="margin: 0.5em 0;">Loss drops late but reaches near zero</p>
+                <p style="margin: 0;"><span style="color: #bdbf39; font-weight: bold; font-size: 1.2em;">29% vulnerable</span></p>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div style="background-color: #f5f5f5; padding: 1.5em; border-radius: 5px;">
+                <p style="margin: 0; font-weight: bold;">Hard-to-fit outlier</p>
+                <p style="margin: 0.5em 0;">Loss drops slowly, stays relatively high</p>
+                <p style="margin: 0;"><span style="color: #00bcd4; font-weight: bold; font-size: 1.2em;">12% vulnerable</span></p>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div style="background-color: #f5f5f5; padding: 1.5em; border-radius: 5px;">
+                <p style="margin: 0; font-weight: bold;">Average samples</p>
+                <p style="margin: 0.5em 0;">Loss drops quickly and stays low</p>
+                <p style="margin: 0;"><span style="color: #9c27b0; font-weight: bold; font-size: 1.2em;">4.6% vulnerable</span></p>
+              </div>
+            </div>
+          </div>
+          
+          <p style="margin-top: 2em; text-align: center;">
+            Our method <strong>LT-IQR</strong> (Loss Trace Interquartile Range) analyzes per-sample loss trajectories during training to identify vulnerable samples.<br>
+            We define "vulnerable" as samples that are <strong>confidently and correctly identified</strong> by the LiRA membership inference attack at FPR=10⁻³.<br>
+            On CIFAR-10, LT-IQR achieves <strong>92% precision</strong> at identifying the most vulnerable 1% of samples - all without training any shadow models!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End TL;DR Section -->
+
+<!-- Paper abstract -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Membership inference attacks (MIAs) are widely used to empirically assess privacy risks in machine learning models, both providing model-level vulnerability metrics and identifying the most vulnerable training samples. State-of-the-art methods, however, <strong>require training hundreds of shadow models</strong> with the same architecture as the target model. This makes the computational cost of assessing the privacy of models prohibitive for many practical applications, particularly when used iteratively as part of the model development process and for large models. 
+          </p>
+          <p>
+            We propose a novel approach for identifying the training samples most vulnerable to membership inference attacks by analyzing artifacts naturally available during the training process. Our method, <strong>Loss Trace Interquantile Range (LT-IQR)</strong>, analyzes per-sample loss trajectories collected during model training to identify high-risk samples <strong>without requiring any additional model training</strong>. 
+          </p>
+          <p>
+            Through experiments on standard benchmarks, we demonstrate that LT-IQR achieves <strong>92% precision@k=1%</strong> in identifying the samples most vulnerable to state-of-the-art MIAs. This result holds across datasets and model architectures with LT-IQR outperforming both traditional vulnerability metrics, such as loss, and lightweight MIAs using few shadow models. We also show LT-IQR to accurately identify points vulnerable to multiple MIA methods and perform ablation studies. 
+          </p>
+          <p>
+            We believe LT-IQR enables model developers to identify vulnerable training samples, <strong>for free</strong>, as part of the model development process. Our results emphasize the potential of artifact-based methods to efficiently evaluate privacy risks.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<!-- Main Results Figure -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Main Results</h2>
+        <div class="content">
+          <img src="static/images/figure1.png" alt="Figure 1: Precision@k=1% when identifying vulnerable samples" style="width: 100%;"/>
+          <p style="margin-top: 1em;">
+            <strong>Figure 1:</strong> Precision@k=1% (250 samples) when identifying vulnerable samples determined by LiRA attack at a variable FPR threshold.
+          </p>
+          <div style="background-color: #f8f9fa; padding: 1.5em; border-radius: 5px; margin-top: 1em;">
+            <p style="margin-bottom: 1em;">
+              <strong>What this means:</strong> We asked different methods to identify the 250 most vulnerable training samples (top 1%). Our method got it right <span style="color: #388e3c; font-weight: bold;">92% of the time</span>.
+            </p>
+            <p style="margin-bottom: 1em;">
+              <strong>Traditional approaches fail:</strong> Methods that only look at the final model state — like checking which samples have low loss (21% precision) or high gradient norms (20% precision) — perform barely better than <span style="color: #d32f2f;">random guessing</span>.
+            </p>
+            <p style="margin-bottom: 1em;">
+              <strong>We beat expensive methods:</strong> Even RMIA, a state-of-the-art attack that requires training 2 shadow models, only achieves ~75% precision. Our method requires <strong>zero</strong> additional model training.
+            </p>
+            <p style="margin: 0;">
+              <strong>The key insight:</strong> By tracking how each sample's loss changes <em>throughout</em> training (not just at the end), we can identify which samples are being memorized and are therefore vulnerable to privacy attacks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Main Results Figure -->
+
+<!-- Code Examples Section -->
+<section class="section hero">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Implementation</h2>
+        <div class="content has-text-left">
+          <p style="text-align: center; margin-bottom: 2em;">
+            You can collect per-sample losses <strong>for free</strong> during training by simply changing the loss reduction:
+          </p>
+          <pre style="background-color: #282c34; padding: 1.5em; border-radius: 5px; overflow-x: auto;"><code style="color: #abb2bf; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;"><span style="color: #5c6370; font-style: italic;"># Standard PyTorch training loop</span>
+<span style="color: #e06c75;">criterion</span> <span style="color: #56b6c2;">=</span> <span style="color: #e06c75;">nn</span>.<span style="color: #61afef;">CrossEntropyLoss</span>(<span style="color: #e06c75;">reduction</span><span style="color: #56b6c2;">=</span><span style="color: #98c379;">"none"</span>)  <span style="color: #5c6370; font-style: italic;"># Change from default "mean"</span>
+
+<span style="color: #5c6370; font-style: italic;"># During training</span>
+<span style="color: #e06c75;">loss</span> <span style="color: #56b6c2;">=</span> <span style="color: #61afef;">criterion</span>(<span style="color: #e06c75;">outputs</span>, <span style="color: #e06c75;">targets</span>)
+<span style="color: #5c6370; font-style: italic;"># Here loss has shape [batch_size] - per-sample losses</span>
+
+<span style="color: #5c6370; font-style: italic;"># Save the per-sample losses</span>
+<span style="color: #e06c75;">saved_losses</span>.<span style="color: #61afef;">append</span>(<span style="color: #e06c75;">loss</span>.<span style="color: #61afef;">detach</span>())
+
+<span style="color: #5c6370; font-style: italic;"># Take mean for backward pass</span>
+<span style="color: #e06c75;">loss</span>.<span style="color: #61afef;">mean</span>().<span style="color: #61afef;">backward</span>()
+
+<span style="color: #5c6370; font-style: italic;"># After training, compute LT-IQR</span>
+<span style="color: #c678dd;">for</span> <span style="color: #e06c75;">sample_idx</span> <span style="color: #c678dd;">in</span> <span style="color: #61afef;">range</span>(<span style="color: #e06c75;">num_samples</span>):
+    <span style="color: #5c6370; font-style: italic;"># Get loss trace for this sample across all epochs</span>
+    <span style="color: #e06c75;">trace</span> <span style="color: #56b6c2;">=</span> [<span style="color: #e06c75;">epoch_losses</span>[<span style="color: #e06c75;">sample_idx</span>] <span style="color: #c678dd;">for</span> <span style="color: #e06c75;">epoch_losses</span> <span style="color: #c678dd;">in</span> <span style="color: #e06c75;">all_saved_losses</span>]
+    
+    <span style="color: #5c6370; font-style: italic;"># Compute IQR (75th percentile - 25th percentile)</span>
+    <span style="color: #e06c75;">lt_iqr_score</span> <span style="color: #56b6c2;">=</span> <span style="color: #e06c75;">np</span>.<span style="color: #61afef;">percentile</span>(<span style="color: #e06c75;">trace</span>, <span style="color: #d19a66;">75</span>) <span style="color: #56b6c2;">-</span> <span style="color: #e06c75;">np</span>.<span style="color: #61afef;">percentile</span>(<span style="color: #e06c75;">trace</span>, <span style="color: #d19a66;">25</span>)
+    
+<span style="color: #5c6370; font-style: italic;"># Higher LT-IQR scores indicate more vulnerable samples!</span></code></pre>
+          <p style="text-align: center; margin-top: 2em;">
+            That's it! No shadow models, no additional training - just analyze the loss traces you're already computing.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Code Examples Section -->
+
+<!-- Detailed Results Section -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Detailed Results</h2>
+        <div class="content">
+          <p style="margin-bottom: 2em;">
+            Performance at different coverage levels (k) when identifying points vulnerable to LiRA attack at FPR=10⁻³
+          </p>
+          <div style="overflow-x: auto;">
+            <table class="table is-striped is-hoverable" style="margin: 0 auto;">
+              <thead>
+                <tr>
+                  <th rowspan="2">Dataset</th>
+                  <th rowspan="2">Model</th>
+                  <th colspan="2">k = 1%</th>
+                  <th colspan="2">k = 3%</th>
+                  <th colspan="2">k = 5%</th>
+                  <th colspan="2">k = 10%</th>
+                </tr>
+                <tr>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CIFAR-10</td>
+                  <td>RN-20</td>
+                  <td>0.79</td>
+                  <td>0.15</td>
+                  <td>0.64</td>
+                  <td>0.36</td>
+                  <td>0.55</td>
+                  <td>0.51</td>
+                  <td>0.39</td>
+                  <td>0.71</td>
+                </tr>
+                <tr>
+                  <td>CIFAR-10</td>
+                  <td>WRN40-4</td>
+                  <td>0.91</td>
+                  <td>0.11</td>
+                  <td>0.83</td>
+                  <td>0.29</td>
+                  <td>0.75</td>
+                  <td>0.43</td>
+                  <td>0.59</td>
+                  <td>0.69</td>
+                </tr>
+                <tr>
+                  <td>CIFAR-10</td>
+                  <td>WRN28-2</td>
+                  <td>0.92</td>
+                  <td>0.09</td>
+                  <td>0.83</td>
+                  <td>0.26</td>
+                  <td>0.76</td>
+                  <td>0.39</td>
+                  <td>0.60</td>
+                  <td>0.61</td>
+                </tr>
+                <tr>
+                  <td>CIFAR-100</td>
+                  <td>WRN28-2</td>
+                  <td>0.97</td>
+                  <td>0.04</td>
+                  <td>0.94</td>
+                  <td>0.12</td>
+                  <td>0.90</td>
+                  <td>0.19</td>
+                  <td>0.83</td>
+                  <td>0.34</td>
+                </tr>
+                <tr>
+                  <td>CINIC-10</td>
+                  <td>WRN28-2</td>
+                  <td>0.94</td>
+                  <td>0.07</td>
+                  <td>0.88</td>
+                  <td>0.20</td>
+                  <td>0.82</td>
+                  <td>0.32</td>
+                  <td>0.71</td>
+                  <td>0.55</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="background-color: #f8f9fa; padding: 1.5em; border-radius: 5px; margin-top: 2em;">
+            <p style="margin-bottom: 1em;">
+              <strong>At k=1%:</strong> LT-IQR achieves 79-97% precision across all configurations - that's correctly identifying vulnerable samples in the top 250 with near-perfect accuracy.
+            </p>
+            <p style="margin-bottom: 1em;">
+              <strong>Graceful degradation:</strong> Even when asked to identify the top 10% (2,500 samples), we maintain 60-83% precision. The method scales well to larger coverage.
+            </p>
+            <p style="margin-bottom: 1em;">
+              <strong>High recall possible:</strong> At k=10%, we can identify up to 71% of all vulnerable points (see RN-20), showing we can catch most at-risk samples when needed.
+            </p>
+            <p style="margin: 0;">
+              <strong>Dataset complexity matters:</strong> CIFAR-100 shows the best performance (97% precision), likely because the more complex dataset creates more distinct memorization patterns.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Detailed Results Section -->
+
+
+<!--BibTex citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@article{pollock2024free,
+title={Free Record-Level Privacy Risk Evaluation Through Artifact-Based Methods},
+author={Pollock, Joseph and Shilov, Igor and Dodd, Euodia and de Montjoye, Yves-Alexandre},
+journal={arXiv preprint arXiv:2411.05743},
+year={2024}
+}</code></pre>
+    </div>
+</section>
+<!--End BibTex citation -->
+
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Statcounter tracking code -->
+  
+<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+
+  </body>
+  </html>
