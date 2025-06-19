@@ -217,7 +217,7 @@
               <strong>Traditional approaches fail:</strong> Methods that only look at the final model state — like checking which samples have low loss (21% precision) or high gradient norms (20% precision) — perform barely better than <span style="color: #d32f2f;">random guessing</span>.
             </p>
             <p style="margin-bottom: 1em;">
-              <strong>We beat expensive methods:</strong> Even RMIA, a state-of-the-art attack that requires training 2 shadow models, only achieves ~75% precision. Our method requires <strong>zero</strong> additional model training.
+              <strong>We beat expensive methods:</strong> Even RMIA, a state-of-the-art attack that requires training 2 shadow models, achieves slightly lower precision. Our method requires <strong>zero</strong> additional model training.
             </p>
             <p style="margin: 0;">
               <strong>The key insight:</strong> By tracking how each sample's loss changes <em>throughout</em> training (not just at the end), we can identify which samples are being memorized and are therefore vulnerable to privacy attacks.
